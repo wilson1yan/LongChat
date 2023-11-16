@@ -93,7 +93,12 @@ def longeval_load_model(args):
         tokenizer = transformers.AutoTokenizer.from_pretrained(args.model_name_or_path)
         return APIModel(args.model_name_or_path, framework=args.framework), tokenizer
 
-    if "mosaicml/mpt-7b-storywriter" in args.model_name_or_path:
+    if "yarn" in args.model_name_or_path:
+        import llama_yarn
+        config = llama_yarn.LlamaConfig.from_pretrained(args.model_name_or_path)
+        model = llama_yarn.LlamaForCausalLM.from_pretrained(args.model_name_or_path, config=config).cuda()
+        model.eval()
+    elif "mosaicml/mpt-7b-storywriter" in args.model_name_or_path:
         # Adapt from: https://huggingface.co/mosaicml/mpt-7b-storywriter
         filter_string()
         config = transformers.AutoConfig.from_pretrained(args.model_name_or_path, trust_remote_code=True)
